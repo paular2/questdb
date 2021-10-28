@@ -1089,8 +1089,8 @@ public class SqlCodeGenerator implements Mutable {
 
         if (indexed) {
             return new LatestByAllIndexedFilteredRecordCursorFactory(
-                    configuration,
                     metadata,
+                    configuration,
                     dataFrameCursorFactory,
                     latestByIndex,
                     filter,
@@ -2439,10 +2439,9 @@ public class SqlCodeGenerator implements Mutable {
                     // is returned. Thus not all types are appropriate for keys
                     int columnType = myMeta.getColumnType(index);
                     switch (ColumnType.tagOf(columnType)) {
-                        // not supported case ColumnType.SHORT:
-                        // TODO: FunctionParser L440 add case for ShortConstant, at present that breaks many tests
                         case ColumnType.BOOLEAN:
                         case ColumnType.CHAR:
+                        case ColumnType.SHORT: // TODO: FunctionParser L440 add case for ShortConstant, at present that breaks many tests
                         case ColumnType.INT:
                         case ColumnType.LONG:
                         case ColumnType.LONG256:
@@ -2461,7 +2460,7 @@ public class SqlCodeGenerator implements Mutable {
                                     .put(latestBy.getQuick(i).token)
                                     .put(" (")
                                     .put(ColumnType.nameOf(columnType))
-                                    .put("): invalid type, only [BOOLEAN, INT, LONG, LONG256, CHAR, STRING, SYMBOL] are supported in LATEST BY");
+                                    .put("): invalid type, only [BOOLEAN, SHORT, INT, LONG, LONG256, CHAR, STRING, SYMBOL] are supported in LATEST BY");
                     }
                 }
             }
@@ -2796,8 +2795,8 @@ public class SqlCodeGenerator implements Mutable {
 
             if (latestByHasOnlyOneColumn && myMeta.isColumnIndexed(listColumnFilterA.getColumnIndexFactored(0))) {
                 return new LatestByAllIndexedFilteredRecordCursorFactory(
-                        configuration,
                         myMeta,
+                        configuration,
                         new FullBwdDataFrameCursorFactory(engine, tableName, model.getTableId(), model.getTableVersion()),
                         listColumnFilterA.getColumnIndexFactored(0),
                         null,
