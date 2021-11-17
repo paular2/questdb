@@ -1247,6 +1247,8 @@ public final class SqlParser {
 
     private void parseSelectClause(GenericLexer lexer, QueryModel model) throws SqlException {
         CharSequence tok = tok(lexer, "[distinct] column");
+        
+        String temp = tok.toString();
 
         ExpressionNode expr;
         if (isDistinctKeyword(tok)) {
@@ -1350,7 +1352,12 @@ public final class SqlParser {
                 alias = createColumnAlias(expr, model);
             }
 
-            col.setAlias(alias);
+            if ("+".equals(alias.toString())) {
+                col.setAlias(temp);
+            } else {
+                col.setAlias(alias)
+            }
+            
             model.addBottomUpColumn(col);
 
             if (tok == null) {
