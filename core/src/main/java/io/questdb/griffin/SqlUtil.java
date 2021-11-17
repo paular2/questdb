@@ -99,7 +99,14 @@ public class SqlUtil {
 
         if (indexOfDot == -1) {
             if (disallowed) {
-                characterStoreEntry.put("column");
+                if ("+".equals(base.toString())
+                   || "-".equals(base.toString())
+                   || "*".equals(base.toString())
+                   || "/".equals(base.toString())) {
+                    return "+";
+                } else {
+                    characterStoreEntry.put("column");
+                }
             } else {
                 characterStoreEntry.put(base);
             }
