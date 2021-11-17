@@ -66,6 +66,17 @@ public class ShowTablesTest extends AbstractGriffinTest {
                     "show columns from balances", null, false, sqlExecutionContext, false);
         });
     }
+    
+    @Test
+    public void testShowColumnsWithOperations() throws Exception {
+        assertMemoryLeak(() -> {
+            compiler.compile("create table plus as (select x+5 from long_sequence(10))", sqlExecutionContext);
+            assertQuery(
+                    "column\ttype\tindexed\tindexBlockCapacity\tsymbolCached\tsymbolCapacity\tdesignated\n" +
+                            "x\tLONG\tfalse\t0\tfalse\t0\tfalse\n",
+                    "show columns from plus", null, false, sqlExecutionContext, false);
+        });
+    }
 
     @Test
     public void testShowColumnsWithMissingTable() throws Exception {
