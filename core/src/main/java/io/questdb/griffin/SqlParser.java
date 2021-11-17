@@ -1355,7 +1355,7 @@ public final class SqlParser {
             if ("+".equals(alias.toString())) {
                 col.setAlias(temp);
             } else {
-                col.setAlias(alias)
+                col.setAlias(alias);
             }
             
             model.addBottomUpColumn(col);
