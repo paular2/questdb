@@ -81,6 +81,17 @@ public class SqlUtil {
         return createColumnAlias(store, base, indexOfDot, aliasToColumnMap, false);
     }
 
+    /**
+    * Returns an alias for a column which will be a valid name for a column 
+    * in a given table
+    *
+    * @param store a container that is used to modify the base if necessary
+    * @param base the initial name for the column
+    * @param indexOfDot the position of "." in base of -1 if not in base
+    * @param aliasToColumnMap a hashmap container that is checks for names already in the table
+    * @param cleanColumnNames boolean that checks whether base has unallowed characters
+    * @return a new valid alias for a column in the table or default name "column"
+    */
     static CharSequence createColumnAlias(
             CharacterStore store,
             CharSequence base,
