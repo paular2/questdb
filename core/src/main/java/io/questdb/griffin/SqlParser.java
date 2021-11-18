@@ -1353,7 +1353,10 @@ public final class SqlParser {
             }
 
             if ("+".equals(alias.toString())) {
-                col.setAlias(temp);
+                expr.clear();
+                expr.token = temp;
+                expr.type = 4;
+                col.setAlias(createColumnAlias(expr, model));
             } else {
                 col.setAlias(alias);
             }
