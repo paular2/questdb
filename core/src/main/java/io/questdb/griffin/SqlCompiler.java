@@ -1792,81 +1792,89 @@ public class SqlCompiler implements Closeable {
             final int writerTimestampIndex = metadata.getTimestampIndex();
             final CharSequenceHashSet columnSet = model.getColumnSet();
             final int columnSetSize = columnSet.size();
-            Function timestampFunction = null;
-            listColumnFilter.clear();
-            if (columnSetSize > 0) {
-                listColumnFilter.clear();
-                valueFunctions = new ObjList<>(columnSetSize);
-                for (int i = 0; i < columnSetSize; i++) {
-                    int index = metadata.getColumnIndexQuiet(columnSet.get(i));
-                    if (index > -1) {
-                        final ExpressionNode node = model.getColumnValues().getQuick(i);
+            final int rowNum = model.getRowNum();
+            final ObjList<InsertStatement> insertRows = new ObjList<InsertStatement>(rowNum);
+            
+            for(int j = 0; j < rowNum; j++) {
+            
+	            Function timestampFunction = null;
+	            listColumnFilter.clear();
+	            if (columnSetSize > 0) {
+    	            listColumnFilter.clear();
+    	            valueFunctions = new ObjList<>(columnSetSize);
+    	            for (int i = 0; i < columnSetSize; i++) {
+    	                int index = metadata.getColumnIndexQuiet(columnSet.get(i));
+    	                if (index > -1) {
+    	                    final ExpressionNode node = model.getColumnValues().getQuick(j).getQuick(i); //
 
-                        Function function = functionParser.parseFunction(
-                                node,
-                                GenericRecordMetadata.EMPTY,
-                                executionContext
-                        );
+    	                    Function function = functionParser.parseFunction(
+    	                            node,
+    	                            GenericRecordMetadata.EMPTY,
+    	                            executionContext
+    	                    );
 
-                        function = validateAndConsume(
-                                model,
-                                valueFunctions,
-                                metadata,
-                                writerTimestampIndex,
-                                i,
-                                index,
-                                function,
-                                node.position,
-                                executionContext.getBindVariableService()
-                        );
+    	                    function = validateAndConsume(
+    	                            model,
+    	                            valueFunctions,
+    	                            metadata,
+    	                            writerTimestampIndex,
+    	                            i,
+    	                            index,
+    	                            function,
+    	                            node.position,
+    	                            executionContext.getBindVariableService()
+    	                    );
 
-                        if (writerTimestampIndex == index) {
-                            timestampFunction = function;
-                        }
+    	                    if (writerTimestampIndex == index) {
+    	                        timestampFunction = function;
+    	                    }
 
-                    } else {
-                        throw SqlException.invalidColumn(model.getColumnPosition(i), columnSet.get(i));
-                    }
-                }
-            } else {
-                final int columnCount = metadata.getColumnCount();
-                final ObjList<ExpressionNode> values = model.getColumnValues();
-                final int valueCount = values.size();
-                if (columnCount != valueCount) {
-                    throw SqlException.$(model.getEndOfValuesPosition(), "not enough values [expected=").put(columnCount).put(", actual=").put(values.size()).put(']');
-                }
-                valueFunctions = new ObjList<>(columnCount);
+    	                } else {
+    	                    throw SqlException.invalidColumn(model.getColumnPosition(i), columnSet.get(i));
+    	                }
+    	            }
+    	        } else {
+    	            final int columnCount = metadata.getColumnCount();
+    	            final ObjList<ExpressionNode> values = model.getColumnValues().getQuick(j); //
+    	            final int valueCount = values.size();
+    	            if (columnCount != valueCount) {
+    	                throw SqlException.$(model.getEndOfValuesPosition().getQuick(0), "not enough values [expected=").put(columnCount).put(", actual=").put(values.size()).put(']');
+    	            }
+    	            valueFunctions = new ObjList<>(columnCount);
 
-                for (int i = 0; i < columnCount; i++) {
-                    final ExpressionNode node = values.getQuick(i);
+    	            for (int i = 0; i < columnCount; i++) {
+        	            final ExpressionNode node = values.getQuick(i);
 
-                    Function function = functionParser.parseFunction(node, EmptyRecordMetadata.INSTANCE, executionContext);
-                    validateAndConsume(
-                            model,
-                            valueFunctions,
-                            metadata,
-                            writerTimestampIndex,
-                            i,
-                            i,
-                            function,
-                            node.position,
-                            executionContext.getBindVariableService()
-                    );
+        	            Function function = functionParser.parseFunction(node, EmptyRecordMetadata.INSTANCE, executionContext);
+        	            validateAndConsume(
+        	                    model,
+        	                    valueFunctions,
+        	                    metadata,
+        	                    writerTimestampIndex,
+        	                    i,
+        	                    i,
+        	                    function,
+        	                    node.position,
+        	                    executionContext.getBindVariableService()
+        	            );
 
-                    if (writerTimestampIndex == i) {
-                        timestampFunction = function;
-                    }
-                }
+        	            if (writerTimestampIndex == i) {
+        	                timestampFunction = function;
+        	            }
+        	        }
+    	        }
+            
+
+        	    // validate timestamp
+	            if (writerTimestampIndex > -1 && (timestampFunction == null || ColumnType.isNull(timestampFunction.getType()))) {
+    	            throw SqlException.$(0, "insert statement must populate timestamp");
+    	        }
+
+    	        VirtualRecord record = new VirtualRecord(valueFunctions);
+    	        RecordToRowCopier copier = assembleRecordToRowCopier(asm, record, metadata, listColumnFilter);
+    	        insertRows.add(new InsertStatementImpl(engine, Chars.toString(name.token), record, copier, timestampFunction, structureVersion)); //
             }
-
-            // validate timestamp
-            if (writerTimestampIndex > -1 && (timestampFunction == null || ColumnType.isNull(timestampFunction.getType()))) {
-                throw SqlException.$(0, "insert statement must populate timestamp");
-            }
-
-            VirtualRecord record = new VirtualRecord(valueFunctions);
-            RecordToRowCopier copier = assembleRecordToRowCopier(asm, record, metadata, listColumnFilter);
-            return compiledQuery.ofInsert(new InsertStatementImpl(engine, Chars.toString(name.token), record, copier, timestampFunction, structureVersion));
+            return compiledQuery.ofInsert(insertRows);
         } catch (SqlException e) {
             Misc.freeObjList(valueFunctions);
             throw e;
