@@ -1098,14 +1098,26 @@ public final class SqlParser {
         }
 
         if (isValuesKeyword(tok)) {
-            expectTok(lexer, '(');
-
+            int rowNum = 0;
+            
             do {
-                model.addColumnValue(expectExpr(lexer));
-            } while (Chars.equals((tok = tok(lexer, "','")), ','));
+            
+                expectTok(lexer, '(');
+                ObjList<ExpressionNode> row = new ObjList<>();
 
-            expectTok(tok, lexer.lastTokenPosition(), ')');
-            model.setEndOfValuesPosition(lexer.lastTokenPosition());
+                do {
+                	row.add(expectExpr(lexer));
+                } while (Chars.equals((tok = tok(lexer, "','")), ','));
+
+                expectTok(tok, lexer.lastTokenPosition(), ')');
+                model.setEndOfValuesPosition(lexer.lastTokenPosition());
+                model.addRow(row);
+                
+                rowNum++;
+                
+            } while(lexer.hasNext() && Chars.equals((tok = optTok(lexer)), ','));
+            
+            model.setRowNum(rowNum);
 
             return model;
         }
