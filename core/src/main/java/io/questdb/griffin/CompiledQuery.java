@@ -27,6 +27,7 @@ package io.questdb.griffin;
 import io.questdb.cairo.sql.InsertStatement;
 import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.cutlass.text.TextLoader;
+import io.questdb.std.ObjList;
 
 public interface CompiledQuery {
     short SELECT = 1;
@@ -45,7 +46,7 @@ public interface CompiledQuery {
 
     RecordCursorFactory getRecordCursorFactory();
 
-    InsertStatement getInsertStatement();
+    ObjList<InsertStatement> getInsertStatement();
 
     TextLoader getTextLoader();
 
