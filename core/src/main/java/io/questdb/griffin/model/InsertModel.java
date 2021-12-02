@@ -30,14 +30,15 @@ import io.questdb.std.str.CharSink;
 public class InsertModel implements ExecutionModel, Mutable, Sinkable {
     public static final ObjectFactory<InsertModel> FACTORY = InsertModel::new;
     private final CharSequenceHashSet columnSet = new CharSequenceHashSet();
-    private final ObjList<ExpressionNode> columnValues = new ObjList<>();
+    private final ObjList<ObjList<ExpressionNode>> columnValues = new ObjList<>();
     private final IntList columnPositions = new IntList();
     private ExpressionNode tableName;
     private QueryModel queryModel;
     private int selectKeywordPosition;
-    private int endOfValuesPosition;
+    private IntList endOfValuesPosition = new IntList();
     private long batchSize = -1;
     private long commitLag = 0;
+    private int rowNum = 0;
 
     private InsertModel() {
     }
@@ -50,8 +51,8 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
         return false;
     }
 
-    public void addColumnValue(ExpressionNode value) {
-        columnValues.add(value);
+    public void addRow(ObjList<ExpressionNode> row) {
+        columnValues.add(row);
     }
 
     @Override
@@ -62,9 +63,10 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
         this.columnPositions.clear();
         this.columnValues.clear();
         this.selectKeywordPosition = 0;
-        this.endOfValuesPosition = 0;
+        this.endOfValuesPosition.clear();
         this.batchSize = -1;
         this.commitLag = 0;
+        this.rowNum = 0;
     }
 
     public int getColumnPosition(int columnIndex) {
@@ -75,7 +77,7 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
         return columnSet;
     }
 
-    public ObjList<ExpressionNode> getColumnValues() {
+    public ObjList<ObjList<ExpressionNode>> getColumnValues() {
         return columnValues;
     }
 
@@ -85,6 +87,22 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
 
     public void setSelectKeywordPosition(int selectKeywordPosition) {
         this.selectKeywordPosition = selectKeywordPosition;
+    }
+    
+    /**
+    * Returns the numbers of rows that will be inserted 
+    * @return rowNum the numbers of rows that were parsed
+    */
+    public int getRowNum() { 
+        return rowNum;
+    }
+    
+    /**
+    * Sets the numbers of rows that will be inserted 
+    * @param rowNum the numbers of rows that were parsed
+    */
+    public void setRowNum(int rowNum) {
+        this.rowNum = rowNum;
     }
 
     @Override
@@ -123,13 +141,21 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
     public void setTableName(ExpressionNode tableName) {
         this.tableName = tableName;
     }
-
-    public int getEndOfValuesPosition() {
+    
+    /**
+    * Returns the list of the final values positions for each row 
+    * @return endOfValuesPosition an IntList of values that shows the final position of values for a row
+    */
+    public IntList getEndOfValuesPosition() {
         return endOfValuesPosition;
     }
 
+    /**
+    * Adds the position of the final value for a new row
+    * @param endOfValuesPosition an int that tells the position of the last value for the latest row
+    */
     public void setEndOfValuesPosition(int endOfValuesPosition) {
-        this.endOfValuesPosition = endOfValuesPosition;
+        this.endOfValuesPosition.add(endOfValuesPosition);
     }
 
     @Override
