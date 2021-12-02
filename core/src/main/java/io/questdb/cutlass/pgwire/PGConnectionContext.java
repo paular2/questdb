@@ -1075,11 +1075,13 @@ public class PGConnectionContext implements IOContext, Mutable, WriterSource {
                 case CompiledQuery.INSERT:
                     queryTag = TAG_INSERT;
                     typesAndInsert = typesAndInsertPool.pop();
-                    typesAndInsert.of(cc.getInsertStatement(), bindVariableService);
-                    if (bindVariableService.getIndexedVariableCount() > 0) {
-                        LOG.debug().$("cache insert [sql=").$(queryText).$(", thread=").$(Thread.currentThread().getId()).$(']').$();
-                        // we can add insert to cache right away because it is local to the connection
-                        typesAndInsertCache.put(queryText, typesAndInsert);
+                    for(int i = 0; i < cc.getInsertStatement().size(); i++) { //
+	                    typesAndInsert.of(cc.getInsertStatement().getQuick(i), bindVariableService);
+        	            if (bindVariableService.getIndexedVariableCount() > 0) {
+        	                LOG.debug().$("cache insert [sql=").$(queryText).$(", thread=").$(Thread.currentThread().getId()).$(']').$();
+        	                // we can add insert to cache right away because it is local to the connection
+        	                typesAndInsertCache.put(queryText, typesAndInsert);
+        	            }
                     }
                     break;
                 case CompiledQuery.COPY_LOCAL:
