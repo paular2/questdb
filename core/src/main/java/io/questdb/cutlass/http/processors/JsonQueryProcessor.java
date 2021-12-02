@@ -345,10 +345,12 @@ public class JsonQueryProcessor implements HttpRequestProcessor, Closeable {
             CompiledQuery cc,
             CharSequence keepAliveHeader
     ) throws PeerDisconnectedException, PeerIsSlowToReadException, SqlException {
-        final InsertStatement insertStatement = cc.getInsertStatement();
-        try (InsertMethod insertMethod = insertStatement.createMethod(sqlExecutionContext)) {
-            insertMethod.execute();
-            insertMethod.commit();
+        for(int i = 0; i < cc.getInsertStatement().size(); i++) {
+	        final InsertStatement insertStatement = cc.getInsertStatement().getQuick(i); //
+        	try (InsertMethod insertMethod = insertStatement.createMethod(sqlExecutionContext)) {
+        	    insertMethod.execute();
+        	    insertMethod.commit();
+        	}
         }
         sendConfirmation(state, cc, keepAliveHeader);
     }
