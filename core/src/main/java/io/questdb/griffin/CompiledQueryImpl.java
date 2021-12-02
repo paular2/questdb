@@ -27,10 +27,11 @@ package io.questdb.griffin;
 import io.questdb.cairo.sql.InsertStatement;
 import io.questdb.cairo.sql.RecordCursorFactory;
 import io.questdb.cutlass.text.TextLoader;
+import io.questdb.std.ObjList; 
 
 public class CompiledQueryImpl implements CompiledQuery {
     private RecordCursorFactory recordCursorFactory;
-    private InsertStatement insertStatement;
+    private ObjList<InsertStatement> insertStatement; 
     private TextLoader textLoader;
     private short type;
 
@@ -40,7 +41,7 @@ public class CompiledQueryImpl implements CompiledQuery {
     }
 
     @Override
-    public InsertStatement getInsertStatement() {
+    public ObjList<InsertStatement> getInsertStatement() { 
         return insertStatement;
     }
 
