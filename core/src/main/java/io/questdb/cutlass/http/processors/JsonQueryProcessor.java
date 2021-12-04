@@ -340,6 +340,7 @@ public class JsonQueryProcessor implements HttpRequestProcessor, Closeable {
         socket.shutdownWrite();
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     private void executeInsert(
             JsonQueryProcessorState state,
             CompiledQuery cc,
