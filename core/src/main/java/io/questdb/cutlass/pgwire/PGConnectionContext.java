@@ -1034,6 +1034,7 @@ public class PGConnectionContext implements IOContext, Mutable, WriterSource {
         recvBufferReadOffset = 0;
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     private boolean compileQuery(@Transient SqlCompiler compiler)
             throws SqlException, PeerDisconnectedException, PeerIsSlowToReadException {
         if (queryText != null && queryText.length() > 0) {
