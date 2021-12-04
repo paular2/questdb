@@ -40,6 +40,7 @@ public class CompiledQueryImpl implements CompiledQuery {
         return recordCursorFactory;
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     @Override
     public ObjList<InsertStatement> getInsertStatement() { 
         return insertStatement;
