@@ -1245,6 +1245,7 @@ public final class SqlParser {
         throw errUnexpected(lexer, tok);
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/970
     private void parseSelectClause(GenericLexer lexer, QueryModel model) throws SqlException {
         CharSequence tok = tok(lexer, "[distinct] column");
         
