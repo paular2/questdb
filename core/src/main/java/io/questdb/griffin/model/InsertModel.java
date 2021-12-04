@@ -51,10 +51,12 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
         return false;
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     public void addRow(ObjList<ExpressionNode> row) {
         columnValues.add(row);
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     @Override
     public void clear() {
         this.tableName = null;
@@ -77,6 +79,7 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
         return columnSet;
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     public ObjList<ObjList<ExpressionNode>> getColumnValues() {
         return columnValues;
     }
@@ -89,6 +92,7 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
         this.selectKeywordPosition = selectKeywordPosition;
     }
     
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     /**
     * Returns the numbers of rows that will be inserted 
     * @return rowNum the numbers of rows that were parsed
@@ -97,6 +101,7 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
         return rowNum;
     }
     
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     /**
     * Sets the numbers of rows that will be inserted 
     * @param rowNum the numbers of rows that were parsed
@@ -142,6 +147,7 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
         this.tableName = tableName;
     }
     
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     /**
     * Returns the list of the final values positions for each row 
     * @return endOfValuesPosition an IntList of values that shows the final position of values for a row
@@ -150,6 +156,7 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
         return endOfValuesPosition;
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     /**
     * Adds the position of the final value for a new row
     * @param endOfValuesPosition an int that tells the position of the last value for the latest row
