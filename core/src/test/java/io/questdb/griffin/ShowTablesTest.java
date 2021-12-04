@@ -67,6 +67,7 @@ public class ShowTablesTest extends AbstractGriffinTest {
         });
     }
     
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/970
     @Test
     public void testShowColumnsWithOperations() throws Exception {
         assertMemoryLeak(() -> {
