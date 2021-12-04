@@ -1040,6 +1040,7 @@ public final class SqlParser {
         }
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     private ExecutionModel parseInsert(GenericLexer lexer) throws SqlException {
 
         final InsertModel model = insertModelPool.next();
