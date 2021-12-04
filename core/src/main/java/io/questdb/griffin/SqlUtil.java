@@ -81,6 +81,7 @@ public class SqlUtil {
         return createColumnAlias(store, base, indexOfDot, aliasToColumnMap, false);
     }
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/970
     /**
     * Returns an alias for a column which will be a valid name for a column 
     * in a given table
