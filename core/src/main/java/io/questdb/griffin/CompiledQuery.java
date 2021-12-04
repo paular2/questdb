@@ -46,6 +46,7 @@ public interface CompiledQuery {
 
     RecordCursorFactory getRecordCursorFactory();
 
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     ObjList<InsertStatement> getInsertStatement();
 
     TextLoader getTextLoader();
