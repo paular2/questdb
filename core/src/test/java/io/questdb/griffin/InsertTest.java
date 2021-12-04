@@ -578,6 +578,7 @@ public class InsertTest extends AbstractGriffinTest {
         });
     }
     
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     @Test
     public void testInsertManyRows() throws Exception {
         assertMemoryLeak(() -> {
