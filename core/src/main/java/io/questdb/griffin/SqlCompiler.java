@@ -1774,7 +1774,8 @@ public class SqlCompiler implements Closeable {
     RecordCursorFactory generate(QueryModel queryModel, SqlExecutionContext executionContext) throws SqlException {
         return codeGenerator.generate(queryModel, executionContext);
     }
-
+	
+    // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
     private CompiledQuery insert(ExecutionModel executionModel, SqlExecutionContext executionContext) throws SqlException {
         final InsertModel model = (InsertModel) executionModel;
         final ExpressionNode name = model.getTableName();
