@@ -577,6 +577,23 @@ public class InsertTest extends AbstractGriffinTest {
             assertReader(expected, "symbols");
         });
     }
+    
+    @Test
+    public void testInsertManyRows() throws Exception {
+        assertMemoryLeak(() -> {
+            compiler.compile("create table numbers (num1 int, num2 int)", sqlExecutionContext);
+            executeInsert("insert into numbers VALUES (1,2),(3,4),(5,6),(7,8),(9,10);");
+
+            String expected = "num1\tnum2\n" +
+                    "1\t2\n" +
+                    "3\t4\n" +
+                    "5\t6\n" +
+                    "7\t8\n" +
+                    "9\t10\n";
+
+            assertReader(expected, "numbers");
+        });
+    }
 
     @Test
     public void testInsertSymbolPartitioned() throws Exception {
