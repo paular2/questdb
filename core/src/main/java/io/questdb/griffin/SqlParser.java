@@ -1116,7 +1116,7 @@ public final class SqlParser {
                 
                 rowNum++;
                 
-            } while(lexer.hasNext() && Chars.equals((tok = optTok(lexer)), ','));
+            } while(lexer.hasNext() && Chars.equals(tok = optTok(lexer), ','));
             
             model.setRowNum(rowNum);
 
