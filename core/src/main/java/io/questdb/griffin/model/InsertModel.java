@@ -153,7 +153,9 @@ public class InsertModel implements ExecutionModel, Mutable, Sinkable {
     * @return endOfValuesPosition an IntList of values that shows the final position of values for a row
     */
     public IntList getEndOfValuesPosition() {
-        return endOfValuesPosition;
+    	IntList r = new IntList();
+    	r.addAll(endOfValuesPosition);
+        return r;
     }
 
     // CS427 Issue link: https://github.com/questdb/questdb/issues/1462
